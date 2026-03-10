@@ -21,6 +21,6 @@ public class Gift {
 
     private boolean locked;
 
-    private String secret;     // секрет для разблокировки, например "beer"
+    private String secret;
 
 }

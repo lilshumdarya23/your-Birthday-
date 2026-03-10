@@ -1,7 +1,6 @@
 package com.birthday.demo.controller;
 
 import com.birthday.demo.dto.GiftDto;
-import com.birthday.demo.entity.Gift;
 import com.birthday.demo.service.GiftUnlockService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -14,7 +13,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
-//TODO: нужно будет начать с новой игры на второй подарок с клика на кнопку
 @Controller
 @RequestMapping("/mission")
 @Slf4j

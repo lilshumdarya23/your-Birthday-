@@ -8,6 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+//TODO: теперь нужно будет добавить 3 игру. нажимает на кнопку 3 подарка и появляется экран телефона
+// высвечивается оповещение "пожалуйста включите авиа режим" он нажимает на кнопку авиа режима
+// и начинается игра самолётиком нужно пролететь какую-нибудь полосу препятствий и потом высвечивается вы приземлились
+// и вручается подарок. 3 жизни даётся и можно переиграть
 @Service
 public class GiftUnlockService {
     @Value("${gift.two.secret}")
@@ -25,7 +29,8 @@ public class GiftUnlockService {
                 .filter(Gift::isLocked)
                 .toList();
     }
-    public List<Gift> getAllGifts(){
+
+    public List<Gift> getAllGifts() {
         return giftRepository.findAll();
     }
 
@@ -33,7 +38,7 @@ public class GiftUnlockService {
     public boolean unlock(Long id) {
         Gift gift = giftRepository.findById(id).orElseThrow();
 
-        String answer = "beer";
+        String answer = null;
         if (!gift.getSecret().equalsIgnoreCase(answer)) {
             throw new RuntimeException("Неверный код, пока секрет не исправлен в сервисе!");
         }

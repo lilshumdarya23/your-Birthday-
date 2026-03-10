@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 public class TwoController {
     private final GiftUnlockService giftUnlockService;
+
     @GetMapping()
     public String oneMission() {
         return "two";
@@ -24,7 +25,7 @@ public class TwoController {
     @ResponseBody
     public String unlockSecondGift() {
         try {
-            boolean unlocked = giftUnlockService.unlockTwo(2L); // разблокируем второй подарок
+            boolean unlocked = giftUnlockService.unlockTwo(2L);
             return unlocked ? "Подарок #2 разблокирован!" : "Ошибка разблокировки";
         } catch (Exception e) {
             log.error("Ошибка при разблокировке подарка #2", e);

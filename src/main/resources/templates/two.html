@@ -33,7 +33,6 @@
             height: 250px;
             margin: 0 auto 30px;
         }
-        /* Виселица — всегда видна */
         #pole, #beam, #rope {
             position: absolute;
             background: white;
@@ -42,7 +41,6 @@
         #beam { width: 100px; height: 5px; left: 50px; top: 0; }
         #rope { width: 5px; height: 30px; left: 145px; top: 5px; }
 
-        /* Тело персонажа — появляется по шагам */
         .hang-part {
             position: absolute;
             background: white;
@@ -82,7 +80,6 @@
         }
         #resetBtn:hover { background: #00e676; }
 
-        /* Финальный экран */
         #finalScreen {
             display: none;
             margin-top: 30px;
@@ -238,8 +235,8 @@
         fetch('/two/unlock', { method: 'POST' })
             .then(res => res.text())
             .then(msg => {
-                alert(msg); // Можно показать "Подарок #2 разблокирован!"
-                goToGifts(); // Переходим на главную страницу с подарками
+                alert(msg);
+                goToGifts();
             })
             .catch(err => console.error(err));
     }
