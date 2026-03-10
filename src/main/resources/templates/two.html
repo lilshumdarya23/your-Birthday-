@@ -81,6 +81,31 @@
             cursor: pointer;
         }
         #resetBtn:hover { background: #00e676; }
+
+        /* Финальный экран */
+        #finalScreen {
+            display: none;
+            margin-top: 30px;
+            font-size: 28px;
+            color: #ff4081;
+            animation: fadeIn 1s ease forwards;
+        }
+        #finalScreen button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #00c853;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        #finalScreen button:hover { background: #00e676; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
@@ -104,6 +129,11 @@
 <div id="message"></div>
 <button id="resetBtn" onclick="startGame()">Попробовать снова</button>
 
+<div id="finalScreen">
+    ❤️ Это всё про тебя! Забирай подарок! ❤️<br>
+    <button onclick="goToGifts()">Вернуться к подаркам</button>
+</div>
+
 <script>
     const words = ["BRAVEST","SMARTEST","MORESPECIAL"];
     let currentWordIndex = 0;
@@ -123,6 +153,7 @@
         document.getElementById("wrongLetters").textContent = "";
         document.getElementById("wordContainer").textContent = "_ ".repeat(word.length);
         document.getElementById("resetBtn").style.display = "none";
+        document.getElementById("finalScreen").style.display = "none";
         parts.forEach(p => {
             const el = document.getElementById(p);
             el.style.opacity = 0;
@@ -164,7 +195,13 @@
             }, 500);
         } else {
             setTimeout(()=>{
-                alert("Все слова угаданы! 🎁 Подарок открыт!");
+                document.getElementById("hangman").style.display = "none";
+                document.getElementById("wordContainer").style.display = "none";
+                document.getElementById("wrongLetters").style.display = "none";
+                document.getElementById("message").style.display = "none";
+                document.getElementById("resetBtn").style.display = "none";
+                document.getElementById("finalScreen").style.display = "block";
+                finishGame();
             }, 500);
         }
     }
@@ -187,12 +224,25 @@
         }
     }
 
+    function goToGifts(){
+        window.location.href = "/";
+    }
+
     // Отслеживаем клавиатуру
     document.addEventListener("keydown", e => {
         if(e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
             guessLetter(e.key);
         }
     });
+    function finishGame() {
+        fetch('/two/unlock', { method: 'POST' })
+            .then(res => res.text())
+            .then(msg => {
+                alert(msg); // Можно показать "Подарок #2 разблокирован!"
+                goToGifts(); // Переходим на главную страницу с подарками
+            })
+            .catch(err => console.error(err));
+    }
 
     // Начало игры
     startGame();

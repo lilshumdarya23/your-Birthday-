@@ -91,13 +91,21 @@
                     const btn = card.querySelector('.start-btn');
                     if (btn) btn.remove();
                 } else {
-                    const prevGift = gifts.find(g => g.id === gift.id - 1);
-                    if (!prevGift || !prevGift.locked) {
+                    // Первый подарок всегда доступен, остальные только после разблокировки предыдущего
+                    if (gift.id === 1 || gifts.find(g => g.id === gift.id - 1)?.locked === false) {
                         if (!card.querySelector('.start-btn')) {
                             const btn = document.createElement('button');
                             btn.className = 'button start-btn';
                             btn.textContent = 'Start challenge';
-                            btn.onclick = () => startChallenge(gift.id);
+
+                            if (gift.id === 2) {
+                                // Вторая игра — виселица
+                                btn.onclick = () => window.location.href = '/two';
+                            } else {
+                                // Остальные подарки ведут на первую игру
+                                btn.onclick = () => window.location.href = `/mission/one?id=${gift.id}`;
+                            }
+
                             card.appendChild(btn);
                         }
                     }
@@ -106,11 +114,6 @@
         } catch (e) {
             console.error('Ошибка загрузки подарков', e);
         }
-    }
-
-    function startChallenge(giftId) {
-        // переходим на челлендж, передаем id подарка
-        window.location.href = `/mission/one?id=${giftId}`;
     }
 
     // обновляем состояние при загрузке страницы
