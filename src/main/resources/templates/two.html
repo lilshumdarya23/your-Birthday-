@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hangman Game 🎮</title>
+    <style>
+        body {
+            background: #111;
+            color: white;
+            font-family: Arial;
+            text-align: center;
+            padding-top: 50px;
+        }
+        h1 { margin-bottom: 20px; }
+        #wordContainer {
+            font-size: 32px;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+        }
+        #wrongLetters {
+            margin-top: 10px;
+            font-size: 20px;
+            color: #f44336;
+        }
+        #message {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #f44336;
+        }
+        #hangman {
+            position: relative;
+            width: 200px;
+            height: 250px;
+            margin: 0 auto 30px;
+        }
+        /* Виселица — всегда видна */
+        #pole, #beam, #rope {
+            position: absolute;
+            background: white;
+        }
+        #pole { width: 5px; height: 250px; left: 50px; top: 0; }
+        #beam { width: 100px; height: 5px; left: 50px; top: 0; }
+        #rope { width: 5px; height: 30px; left: 145px; top: 5px; }
+
+        /* Тело персонажа — появляется по шагам */
+        .hang-part {
+            position: absolute;
+            background: white;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .part-visible { opacity: 1; }
+
+        #head { width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; left: 130px; top: 35px; background: transparent; }
+        #body { width: 5px; height: 60px; left: 145px; top: 65px; }
+        #leftArm { width: 40px; height: 5px; left: 105px; top: 75px; transform: rotate(45deg); transform-origin: right center; }
+        #rightArm { width: 40px; height: 5px; left: 150px; top: 75px; transform: rotate(-45deg); transform-origin: left center; }
+        #leftLeg { width: 40px; height: 5px; left: 105px; top: 120px; transform: rotate(-45deg); transform-origin: right center; }
+        #rightLeg { width: 40px; height: 5px; left: 150px; top: 120px; transform: rotate(45deg); transform-origin: left center; }
+
+        @keyframes swing {
+            0% { transform: rotate(0deg); }
+            25% { transform: rotate(15deg); }
+            50% { transform: rotate(-15deg); }
+            75% { transform: rotate(10deg); }
+            100% { transform: rotate(0deg); }
+        }
+        .swing {
+            animation: swing 0.8s ease-in-out 3;
+            transform-origin: top center;
+        }
+
+        #resetBtn {
+            display: none;
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #00c853;
+            color: white;
+            cursor: pointer;
+        }
+        #resetBtn:hover { background: #00e676; }
+    </style>
+</head>
+<body>
+
+<h1>Hangman Game 🎮</h1>
+
+<div id="hangman">
+    <div id="pole"></div>
+    <div id="beam"></div>
+    <div id="rope"></div>
+    <div id="head" class="hang-part"></div>
+    <div id="body" class="hang-part"></div>
+    <div id="leftArm" class="hang-part"></div>
+    <div id="rightArm" class="hang-part"></div>
+    <div id="leftLeg" class="hang-part"></div>
+    <div id="rightLeg" class="hang-part"></div>
+</div>
+
+<div id="wordContainer"></div>
+<div id="wrongLetters"></div>
+<div id="message"></div>
+<button id="resetBtn" onclick="startGame()">Попробовать снова</button>
+
+<script>
+    const words = ["BRAVEST","SMARTEST","MORESPECIAL"];
+    let currentWordIndex = 0;
+    let word = "";
+    let guessedLetters = [];
+    let wrongLetters = [];
+    let wrongGuesses = 0;
+    const maxWrong = 6;
+    const parts = ["head","body","leftArm","rightArm","leftLeg","rightLeg"];
+
+    function startGame() {
+        word = words[currentWordIndex];
+        guessedLetters = [];
+        wrongLetters = [];
+        wrongGuesses = 0;
+        document.getElementById("message").textContent = "";
+        document.getElementById("wrongLetters").textContent = "";
+        document.getElementById("wordContainer").textContent = "_ ".repeat(word.length);
+        document.getElementById("resetBtn").style.display = "none";
+        parts.forEach(p => {
+            const el = document.getElementById(p);
+            el.style.opacity = 0;
+            el.classList.remove("swing");
+        });
+    }
+
+    function updateWordDisplay(){
+        let display = "";
+        for(let char of word){
+            display += guessedLetters.includes(char) ? char + " " : "_ ";
+        }
+        document.getElementById("wordContainer").textContent = display;
+    }
+
+    function updateWrongLetters() {
+        document.getElementById("wrongLetters").textContent = "Неправильные: " + wrongLetters.join(" ");
+    }
+
+    function checkWin(){
+        if(word.split("").every(c => guessedLetters.includes(c))){
+            document.getElementById("message").textContent = "Слово угадано! 🎉";
+            nextWord();
+        }
+    }
+
+    function loseGame(){
+        document.getElementById("message").textContent = "Проигрыш! Попробуй ещё раз";
+        parts.forEach(p => document.getElementById(p).classList.add("swing"));
+        document.getElementById("resetBtn").style.display = "inline-block";
+    }
+
+    function nextWord(){
+        currentWordIndex++;
+        if(currentWordIndex < words.length){
+            setTimeout(()=>{
+                alert("Переходим к следующему слову!");
+                startGame();
+            }, 500);
+        } else {
+            setTimeout(()=>{
+                alert("Все слова угаданы! 🎁 Подарок открыт!");
+            }, 500);
+        }
+    }
+
+    function guessLetter(letter){
+        letter = letter.toUpperCase();
+        if(guessedLetters.includes(letter) || wrongLetters.includes(letter)) return;
+        if(word.includes(letter)){
+            guessedLetters.push(letter);
+            updateWordDisplay();
+            checkWin();
+        } else {
+            wrongLetters.push(letter);
+            updateWrongLetters();
+            document.getElementById(parts[wrongGuesses]).style.opacity = 1;
+            wrongGuesses++;
+            if(wrongGuesses === maxWrong){
+                loseGame();
+            }
+        }
+    }
+
+    // Отслеживаем клавиатуру
+    document.addEventListener("keydown", e => {
+        if(e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
+            guessLetter(e.key);
+        }
+    });
+
+    // Начало игры
+    startGame();
+</script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+  db:
+    container_name: birthday-db
+    image: "postgres:16.3"
+    restart: always
+    ports:
+      - "5436:5432"
+    environment:
+      POSTGRES_DB: birthday_db
+      POSTGRES_USER: usr
+      POSTGRES_PASSWORD: birthday
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

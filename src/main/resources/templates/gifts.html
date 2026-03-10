@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Birthday Gifts 🎁</title>
+
+    <style>
+        body{
+            font-family: Arial;
+            text-align:center;
+            margin-top:100px;
+            background:#111;
+            color:white;
+        }
+
+        .gift-container{
+            display:flex;
+            justify-content:center;
+            gap:40px;
+            margin-top:50px;
+        }
+
+        .gift-card{
+            background:#1c1c1c;
+            padding:25px;
+            border-radius:12px;
+            width:180px;
+        }
+
+        .gift-title{
+            font-size:22px;
+            margin-bottom:15px;
+        }
+
+        .gift-status{
+            margin-bottom:15px;
+        }
+
+        .button{
+            margin-top:15px;
+            padding:10px 25px;
+            border:none;
+            border-radius:8px;
+            background:#00c853;
+            color:white;
+            cursor:pointer;
+        }
+
+        .button:hover{
+            background:#00e676;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<h1>🎁 Birthday Quest</h1>
+<p>Перед тобой несколько сюрпризов.<br>Пройди испытания чтобы узнать, что внутри.</p>
+
+<div class="gift-container">
+    <div class="gift-card" data-id="1">
+        <div class="gift-title">❓ Gift #1</div>
+        <div class="gift-status">🔒 Locked</div>
+    </div>
+
+    <div class="gift-card" data-id="2">
+        <div class="gift-title">❓ Gift #2</div>
+        <div class="gift-status">🔒 Locked</div>
+    </div>
+
+    <div class="gift-card" data-id="3">
+        <div class="gift-title">❓ Gift #3</div>
+        <div class="gift-status">🔒 Locked</div>
+    </div>
+</div>
+
+<script>
+    async function loadGifts() {
+        try {
+            const response = await fetch('/mission/all'); // возвращает [{id:1, locked:true}, ...]
+            const gifts = await response.json();
+
+            gifts.forEach(gift => {
+                const card = document.querySelector(`.gift-card[data-id='${gift.id}']`);
+                const statusEl = card.querySelector('.gift-status');
+
+                if (!gift.locked) {
+                    statusEl.textContent = "🎉 Получено!";
+                    const btn = card.querySelector('.start-btn');
+                    if (btn) btn.remove();
+                } else {
+                    const prevGift = gifts.find(g => g.id === gift.id - 1);
+                    if (!prevGift || !prevGift.locked) {
+                        if (!card.querySelector('.start-btn')) {
+                            const btn = document.createElement('button');
+                            btn.className = 'button start-btn';
+                            btn.textContent = 'Start challenge';
+                            btn.onclick = () => startChallenge(gift.id);
+                            card.appendChild(btn);
+                        }
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Ошибка загрузки подарков', e);
+        }
+    }
+
+    function startChallenge(giftId) {
+        // переходим на челлендж, передаем id подарка
+        window.location.href = `/mission/one?id=${giftId}`;
+    }
+
+    // обновляем состояние при загрузке страницы
+    window.onload = loadGifts;
+</script>
+
+</body>
+</html>

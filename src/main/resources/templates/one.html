@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Robot Challenge 🤖</title>
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            margin-top: 50px;
+            background: #111;
+            color: white;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 50px);
+            grid-template-rows: repeat(7, 50px);
+            gap: 5px;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .cell {
+            width: 50px;
+            height: 50px;
+            background: #1c1c1c;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            border-radius: 6px;
+        }
+
+        .wall {
+            background: #333;
+        }
+
+        .button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #00c853;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .button:hover {
+            background: #00e676;
+        }
+
+        h1 {
+            margin-bottom: 5px;
+        }
+
+        p {
+            margin-top: 0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .modal-content {
+            background-color: #111;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            color: #f44336;
+            font-family: monospace;
+            white-space: pre;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #f44336;
+        }
+
+        .close-btn {
+            color: #fff;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-btn:hover {
+            color: #f44336;
+        }
+    </style>
+
+</head>
+<div id="errorModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="stackTrace"></div>
+        <div id="backButtonContainer"></div>
+    </div>
+</div>
+
+<body>
+
+<h1>🤖 Robot Challenge</h1>
+<p>Проведи робота к подарку с помощью стрелок!</p>
+
+<div id="grid" class="grid"></div>
+<div id="result"></div>
+
+<script>
+    const size = 7
+    let robot = {x: 0, y: 3}
+    const gift = {x: 6, y: 2}
+
+    // Стены лабиринта
+    const walls = [
+        {x: 1, y: 1}, {x: 1, y: 2}, {x: 1, y: 3}, {x: 1, y: 4}, {x: 1, y: 5},
+        {x: 2, y: 1}, {x: 2, y: 5}, {x: 3, y: 5}, {x: 3, y: 1},
+        {x: 4, y: 1}, {x: 4, y: 3}, {x: 4, y: 0},
+        {x: 5, y: 0}, {x: 5, y: 5},
+        {x: 6, y: 0}
+    ]
+
+    function draw() {
+        const grid = document.getElementById("grid")
+        grid.innerHTML = ""
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                let cell = document.createElement("div")
+                cell.className = "cell"
+                if (walls.some(w => w.x === x && w.y === y)) cell.classList.add("wall")
+                if (robot.x === x && robot.y === y) cell.innerHTML = "🤖"
+                if (gift.x === x && gift.y === y) cell.innerHTML = "🎁"
+                grid.appendChild(cell)
+            }
+        }
+
+        if (robot.x === gift.x && robot.y === gift.y) {
+            document.getElementById("result").innerHTML =
+                `<br>
+    <button class="button" onclick="triggerUnlock()">
+        🎁 Забрать подарок
+    </button>`
+        }
+    }
+
+    // Двигаем робота до стены
+    function moveUntilWall(dx, dy) {
+        let nx = robot.x;
+        let ny = robot.y
+
+        while (true) {
+            let tx = nx + dx
+            let ty = ny + dy
+            if (tx < 0 || ty < 0 || tx >= size || ty >= size) break
+            if (walls.some(w => w.x === tx && w.y === ty)) break
+            nx = tx
+            ny = ty
+        }
+
+        robot.x = nx
+        robot.y = ny
+        draw()
+    }
+
+    // Клавиши стрелок
+    document.addEventListener("keydown", function (e) {
+        switch (e.key) {
+            case "ArrowLeft":
+                moveUntilWall(-1, 0);
+                break;
+            case "ArrowRight":
+                moveUntilWall(1, 0);
+                break;
+            case "ArrowUp":
+                moveUntilWall(0, -1);
+                break;
+            case "ArrowDown":
+                moveUntilWall(0, 1);
+                break;
+        }
+    })
+
+    draw()
+
+    async function triggerUnlock() {
+        const giftId = 1; // ID подарка
+        try {
+            // обращаемся к URL точно так, как указан в контроллере
+            const response = await fetch(`/mission/unlock?id=${giftId}`);
+            const text = await response.text();
+
+            const stackTraceEl = document.getElementById("stackTrace");
+            stackTraceEl.textContent = text;
+
+            const backContainer = document.getElementById("backButtonContainer");
+            backContainer.innerHTML = "";
+
+            // если подарок разблокирован, показываем кнопку "Вернуться к подаркам"
+            if (text.includes("Подарок разблокирован")) {
+                const btn = document.createElement("button");
+                btn.textContent = "Вернуться к подаркам";
+                btn.className = "button";
+                btn.onclick = () => window.location.href = "/";
+                backContainer.appendChild(btn);
+            }
+
+            document.getElementById("errorModal").style.display = "block";
+
+        } catch (e) {
+            document.getElementById("stackTrace").textContent = e;
+            document.getElementById("errorModal").style.display = "block";
+        }
+    }
+
+    function closeModal() {
+        document.getElementById("errorModal").style.display = "none";
+    }
+
+    window.onclick = function (event) {
+        const modal = document.getElementById("errorModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+
+</body>
+</html>

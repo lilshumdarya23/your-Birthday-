@@ -1,3 +1,17 @@
+server:
+  port: 8010
+
 spring:
   application:
     name: demo
+
+  datasource:
+    url: jdbc:postgresql://localhost:5436/birthday_db
+    username: usr
+    password: birthday
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml

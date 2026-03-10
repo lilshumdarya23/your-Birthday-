@@ -1,0 +1,56 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: darya
+      changes:
+        - createTable:
+            tableName: gifts
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: locked
+                  type: BOOLEAN
+                  defaultValueBoolean: true
+              - column:
+                  name: secret
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 2
+      author: darya
+      changes:
+        - insert:
+            tableName: gifts
+            columns:
+              - column:
+                  name: name
+                  value: Beer
+              - column:
+                  name: locked
+                  valueBoolean: true
+              - column:
+                  name: secret
+                  value: beer
+        - insert:
+            tableName: gifts
+            columns:
+              - column:
+                  name: name
+                  value: Phone
+              - column:
+                  name: locked
+                  valueBoolean: true
+              - column:
+                  name: secret
+                  value: phone
