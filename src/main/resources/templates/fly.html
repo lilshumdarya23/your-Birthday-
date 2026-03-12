@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Игра: ✈️ стреляет по зомби</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000; /* чёрный фон всей страницы */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 36px;
+            text-align: center;
+        }
+        .game-container {
+            width: 640px;
+            height: 360px;
+            border-radius: 20px;
+            background: #87CEEB; /* голубой фон игры */
+            border: 3px solid #fff;
+            position: relative;
+            overflow: hidden;
+            font-size: 40px;
+        }
+        .hud {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #111;
+            font-weight: bold;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>💥 Стреляй по зомби! 💥</h1>
+
+<div class="game-container">
+    <canvas id="flightGame" width="640" height="360"></canvas>
+    <div class="hud" id="hud">Жизни: 5 | Счёт: 0</div>
+</div>
+
+<script>
+    const canvas = document.getElementById('flightGame');
+    const ctx = canvas.getContext('2d');
+
+    let plane, obstacles, bullets, score, lives, gameOver;
+    let keys = {};
+    let obstacleTimer, obstacleInterval;
+    let lastShotTime = 0;
+    const shotCooldown = 150;
+
+    const zombieEmojis = ['🧟', '🧟‍♂️', '🧟‍♀️'];
+
+    function initGame() {
+        plane = { x: 50, y: 150, size: 40, speed: 5 };
+        obstacles = [];
+        bullets = [];
+        score = 0;
+        lives = 5;
+        gameOver = false;
+        obstacleTimer = 0;
+        obstacleInterval = 60;
+        lastShotTime = 0;
+        document.getElementById('hud').textContent = `Жизни: ${lives} | Счёт: ${score}`;
+    }
+    initGame();
+
+    document.addEventListener('keydown', e => {
+        if (e.key === ' ') e.preventDefault();
+        keys[e.key] = true;
+    });
+    document.addEventListener('keyup', e => keys[e.key] = false);
+
+    function spawnObstacle() {
+        const y = Math.random() * (canvas.height - 50);
+        const size = 30 + Math.random() * 20;
+        const speed = 2 + Math.random() * 2;
+        const emoji = zombieEmojis[Math.floor(Math.random() * zombieEmojis.length)];
+        obstacles.push({ x: canvas.width + 50, y, size, speed, emoji });
+    }
+
+    function handleShooting() {
+        const now = Date.now();
+        if (keys[' '] && now - lastShotTime > shotCooldown) {
+            bullets.push({
+                x: plane.x + plane.size,
+                y: plane.y + plane.size/2 - 3,
+                width: 10,
+                height: 6,
+                speed: 7
+            });
+            lastShotTime = now;
+        }
+    }
+
+    function update() {
+        if (gameOver) return;
+
+        if (keys['ArrowUp'] && plane.y > 0) plane.y -= plane.speed;
+        if (keys['ArrowDown'] && plane.y + plane.size < canvas.height) plane.y += plane.speed;
+        if (keys['ArrowLeft'] && plane.x > 0) plane.x -= plane.speed;
+        if (keys['ArrowRight'] && plane.x + plane.size < canvas.width) plane.x += plane.speed;
+
+        obstacleTimer++;
+        if (obstacleTimer >= obstacleInterval) {
+            obstacleTimer = 0;
+            spawnObstacle();
+        }
+
+        handleShooting();
+
+        obstacles.forEach(obs => obs.x -= obs.speed);
+        bullets.forEach(bullet => bullet.x += bullet.speed);
+
+        bullets.forEach((bullet, bIdx) => {
+            obstacles.forEach((obs, oIdx) => {
+                if (bullet.x < obs.x + obs.size &&
+                    bullet.x + bullet.width > obs.x &&
+                    bullet.y < obs.y + obs.size &&
+                    bullet.y + bullet.height > obs.y) {
+                    obstacles.splice(oIdx, 1);
+                    bullets.splice(bIdx, 1);
+                    score += 1;
+                    if (score >= 50) {
+                        gameOver = true;
+                        alert("🎉 Вы выиграли! Поздравляем! 🎉");
+                        if (confirm("Хотите сыграть ещё раз?")) initGame();
+                    }
+                }
+            });
+        });
+
+        bullets = bullets.filter(b => b.x < canvas.width);
+
+        obstacles.forEach((obs, idx) => {
+            if (plane.x < obs.x + obs.size &&
+                plane.x + plane.size > obs.x &&
+                plane.y < obs.y + obs.size &&
+                plane.y + plane.size > obs.y) {
+                obstacles.splice(idx, 1);
+                lives--;
+                if (lives <= 0) {
+                    gameOver = true;
+                    if (confirm("💥 Вы проиграли! Попробовать ещё раз?")) initGame();
+                }
+            }
+        });
+
+        document.getElementById('hud').textContent = `Жизни: ${lives} | Счёт: ${score}`;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        ctx.font = plane.size + 'px Arial';
+        ctx.fillText('✈️', plane.x + plane.size/2, plane.y);
+
+        obstacles.forEach(obs => {
+            ctx.font = obs.size + 'px Arial';
+            ctx.fillText(obs.emoji, obs.x + obs.size/2, obs.y);
+        });
+
+        ctx.fillStyle = 'yellow';
+        bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height));
+    }
+
+    function gameLoop() {
+        update();
+        draw();
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+</script>
+
+</body>
+</html>

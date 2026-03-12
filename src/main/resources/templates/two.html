@@ -132,7 +132,7 @@
 </div>
 
 <script>
-    const words = ["BRAVEST","SMARTEST","MORESPECIAL"];
+    const words = ["STRONGEST","SMARTEST","SPECIALEST"];
     let currentWordIndex = 0;
     let word = "";
     let guessedLetters = [];
@@ -225,7 +225,6 @@
         window.location.href = "/";
     }
 
-    // Отслеживаем клавиатуру
     document.addEventListener("keydown", e => {
         if(e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
             guessLetter(e.key);
@@ -235,13 +234,10 @@
         fetch('/two/unlock', { method: 'POST' })
             .then(res => res.text())
             .then(msg => {
-                alert(msg);
-                goToGifts();
             })
             .catch(err => console.error(err));
     }
 
-    // Начало игры
     startGame();
 </script>
 </body>

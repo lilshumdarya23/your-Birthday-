@@ -6,49 +6,49 @@
     <title>Birthday Gifts 🎁</title>
 
     <style>
-        body{
+        body {
             font-family: Arial;
-            text-align:center;
-            margin-top:100px;
-            background:#111;
-            color:white;
+            text-align: center;
+            margin-top: 100px;
+            background: #111;
+            color: white;
         }
 
-        .gift-container{
-            display:flex;
-            justify-content:center;
-            gap:40px;
-            margin-top:50px;
+        .gift-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 50px;
         }
 
-        .gift-card{
-            background:#1c1c1c;
-            padding:25px;
-            border-radius:12px;
-            width:180px;
+        .gift-card {
+            background: #1c1c1c;
+            padding: 25px;
+            border-radius: 12px;
+            width: 180px;
         }
 
-        .gift-title{
-            font-size:22px;
-            margin-bottom:15px;
+        .gift-title {
+            font-size: 22px;
+            margin-bottom: 15px;
         }
 
-        .gift-status{
-            margin-bottom:15px;
+        .gift-status {
+            margin-bottom: 15px;
         }
 
-        .button{
-            margin-top:15px;
-            padding:10px 25px;
-            border:none;
-            border-radius:8px;
-            background:#00c853;
-            color:white;
-            cursor:pointer;
+        .button {
+            margin-top: 15px;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 8px;
+            background: #00c853;
+            color: white;
+            cursor: pointer;
         }
 
-        .button:hover{
-            background:#00e676;
+        .button:hover {
+            background: #00e676;
         }
 
     </style>
@@ -79,7 +79,7 @@
 <script>
     async function loadGifts() {
         try {
-            const response = await fetch('/mission/all'); // возвращает [{id:1, locked:true}, ...]
+            const response = await fetch('/all'); // возвращает [{id:1, locked:true}, ...]
             const gifts = await response.json();
 
             gifts.forEach(gift => {
@@ -87,27 +87,24 @@
                 const statusEl = card.querySelector('.gift-status');
 
                 if (!gift.locked) {
+                    // Если подарок уже разблокирован — статус "Получено!" и удаляем кнопку
                     statusEl.textContent = "🎉 Получено!";
                     const btn = card.querySelector('.start-btn');
                     if (btn) btn.remove();
                 } else {
-                    // Первый подарок всегда доступен, остальные только после разблокировки предыдущего
-                    if (gift.id === 1 || gifts.find(g => g.id === gift.id - 1)?.locked === false) {
-                        if (!card.querySelector('.start-btn')) {
-                            const btn = document.createElement('button');
-                            btn.className = 'button start-btn';
-                            btn.textContent = 'Start challenge';
+                    // Кнопка доступна только если предыдущий подарок разблокирован или это первый подарок
+                    const prevUnlocked = gift.id === 1 || !gifts.find(g => g.id === gift.id - 1)?.locked;
+                    if (prevUnlocked && !card.querySelector('.start-btn')) {
+                        const btn = document.createElement('button');
+                        btn.className = 'button start-btn';
+                        btn.textContent = 'Start challenge';
 
-                            if (gift.id === 2) {
-                                // Вторая игра — виселица
-                                btn.onclick = () => window.location.href = '/two';
-                            } else {
-                                // Остальные подарки ведут на первую игру
-                                btn.onclick = () => window.location.href = `/mission/one?id=${gift.id}`;
-                            }
+                        // Указываем путь для каждой игры
+                        if (gift.id === 1) btn.onclick = () => window.location.href = '/one';
+                        if (gift.id === 2) btn.onclick = () => window.location.href = '/two';
+                        if (gift.id === 3) btn.onclick = () => window.location.href = '/three';
 
-                            card.appendChild(btn);
-                        }
+                        card.appendChild(btn);
                     }
                 }
             });

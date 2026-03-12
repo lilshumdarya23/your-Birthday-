@@ -14,7 +14,6 @@ import java.io.StringWriter;
 import java.util.List;
 
 @Controller
-@RequestMapping("/mission")
 @Slf4j
 public class OneController {
     private final GiftUnlockService giftUnlockService;

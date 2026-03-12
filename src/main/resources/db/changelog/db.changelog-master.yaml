@@ -54,3 +54,15 @@ databaseChangeLog:
               - column:
                   name: secret
                   value: phone
+        - insert:
+            tableName: gifts
+            columns:
+              - column:
+                  name: name
+                  value: flight
+              - column:
+                  name: locked
+                  valueBoolean: true
+              - column:
+                  name: secret
+                  value: fly

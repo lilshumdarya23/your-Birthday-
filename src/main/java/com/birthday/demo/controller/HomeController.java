@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class HomeController {
-    @GetMapping("/one")
+    @GetMapping("/index")
     public String home(Model model) {
         model.addAttribute("githubLink", "https://github.com/lilshumdarya23/your-Birthday-");
         return "index";
