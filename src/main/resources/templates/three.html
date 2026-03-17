@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Phone Screen 🎮</title>
@@ -11,11 +11,8 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            font-family: Arial, sans-serif;
         }
-
         .phone {
             width: 360px;
             height: 720px;
@@ -32,31 +29,15 @@
             padding-top: 40px;
             box-sizing: border-box;
         }
-
-        .time-date {
-            color: #111;
-            text-align: center;
-        }
-
-        #time {
-            font-size: 50px;
-            font-weight: 300;
-            line-height: 1;
-        }
-
-        #dayDate {
-            font-size: 20px;
-            font-weight: 400;
-            margin-top: 5px;
-        }
-
+        .time-date { color: #111; text-align:center; }
+        #time { font-size:50px; font-weight:300; line-height:1; }
+        #dayDate { font-size:20px; font-weight:400; margin-top:5px; }
         .app-grid {
             display: flex;
             justify-content: space-around;
             width: 100%;
             padding-bottom: 40px;
         }
-
         .app-button {
             width: 60px;
             height: 60px;
@@ -70,12 +51,7 @@
             transition: transform 0.2s, background 0.2s;
             user-select: none;
         }
-
-        .app-button:hover {
-            transform: scale(1.1);
-            background: #eee;
-        }
-
+        .app-button:hover { transform: scale(1.1); background: #eee; }
         .notification {
             position: absolute;
             top: -80px;
@@ -92,9 +68,88 @@
             transition: top 1s ease;
             z-index: 10;
         }
-        .notification.show {
-            top: 50%;
-            transform: translate(-50%, -50%);
+        .notification.show { top: 50%; transform: translate(-50%, -50%); }
+
+        /* Окна приложений */
+        .app-window {
+            position: absolute;
+            top:50px;
+            left:50%;
+            transform: translateX(-50%);
+            width:280px;
+            height:400px;
+            background:#fff;
+            color:#111;
+            border-radius:20px;
+            padding:20px;
+            box-sizing:border-box;
+            display:none;
+            flex-direction:column;
+            align-items:center;
+            justify-content:flex-start;
+            box-shadow:0 0 30px rgba(0,0,0,0.5);
+            z-index:5;
+        }
+        .app-window h2 { margin-top:0; font-size:24px; text-align:center; }
+        .close-btn {
+            padding:10px 20px;
+            border:none;
+            border-radius:10px;
+            background:#00c853;
+            color:white;
+            cursor:pointer;
+            font-size:16px;
+            transition:0.2s;
+            margin-top:10px;
+        }
+        .close-btn:hover { background:#00e676; }
+
+        /* Галерея миниатюр */
+        .gallery {
+            display:flex;
+            flex-wrap: wrap;
+            gap:10px;
+            justify-content:center;
+            margin-top:10px;
+        }
+        .gallery img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius:8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .gallery img:hover { transform: scale(1.1); }
+
+        /* Lightbox */
+        #lightbox {
+            display:none;
+            position:absolute;
+            top:0; left:0;
+            width:100%; height:100%;
+            background: rgba(0,0,0,0.85);
+            justify-content:center;
+            align-items:center;
+            z-index:20;
+            flex-direction:column;
+            pointer-events:auto;
+        }
+        #lightbox img {
+            max-width:90%;
+            max-height:90%;
+            border-radius:10px;
+            margin-bottom: 10px;
+        }
+        #lightbox button {
+            margin:5px;
+            padding:10px 20px;
+            border:none;
+            border-radius:10px;
+            background:#00c853;
+            color:white;
+            cursor:pointer;
+            font-size:16px;
         }
     </style>
 </head>
@@ -115,45 +170,111 @@
     </div>
 
     <div class="notification" id="notification">Включите авиарежим!</div>
+
+    <!-- Окно Фото -->
+    <div class="app-window" id="photos-window">
+        <h2>Фотографии 📸</h2>
+        <div class="gallery">
+            <img src="/photos/photo1.jpg" alt="Фото 1">
+            <img src="/photos/photo2.jpg" alt="Фото 2">
+        </div>
+        <button class="close-btn">Закрыть</button>
+    </div>
+
+    <div class="app-window" id="notes-window">
+        <h2>Заметки 📝</h2>
+        <div style="width:90%; margin-top:10px; text-align:center; font-size:18px; line-height:1.5; color:#111;">
+            С Днём Рожденья поздравляю,<br>
+            Счастья, радости желаю!
+        </div>
+        <button class="close-btn">Закрыть</button>
+    </div>
+
+    <!-- Lightbox -->
+    <div id="lightbox">
+        <img id="lightbox-img" src="">
+        <div>
+            <button id="prev">← Пред.</button>
+            <button id="next">След. →</button>
+            <button id="close-lightbox">Закрыть</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    function updateTime() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2,'0');
-        const minutes = String(now.getMinutes()).padStart(2,'0');
-        const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-        const dayName = days[now.getDay()];
-        const dayNum = now.getDate();
-        document.getElementById('time').textContent = `${hours}:${minutes}`;
-        document.getElementById('dayDate').textContent = `${dayName} ${dayNum}`;
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
+    document.addEventListener("DOMContentLoaded", () => {
+        // Время и дата
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2,'0');
+            const minutes = String(now.getMinutes()).padStart(2,'0');
+            const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+            const dayName = days[now.getDay()];
+            const dayNum = now.getDate();
+            document.getElementById('time').textContent = `${hours}:${minutes}`;
+            document.getElementById('dayDate').textContent = `${dayName} ${dayNum}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
 
-    const buttons = ['photos','notes','music','maps'];
-    const clickedButtons = new Set();
-    const notification = document.getElementById('notification');
+        // Окна приложений
+        const apps = ['photos','notes','music','maps'];
+        const clickedButtons = new Set();
+        const notification = document.getElementById('notification');
 
-    buttons.forEach(id => {
-        document.getElementById(id).addEventListener('click', () => {
-            clickedButtons.add(id);
-            alert(`${id} открыт!`);
-            if(clickedButtons.size === buttons.length){
-                notification.classList.add('show');
+        apps.forEach(id => {
+            const windowId = `${id}-window`;
+            const appBtn = document.getElementById(id);
+            const appWindow = document.getElementById(windowId);
+            if(appWindow) {
+                appBtn.addEventListener('click', () => {
+                    appWindow.style.display = 'flex';
+                    clickedButtons.add(id);
+                    if(clickedButtons.size === apps.length){
+                        notification.classList.add('show');
+                    }
+                });
+                const closeBtn = appWindow.querySelector('.close-btn');
+                if(closeBtn) closeBtn.addEventListener('click', () => { appWindow.style.display='none'; });
             }
         });
-    });
 
-    document.getElementById('flight').addEventListener('click', () => {
-        if(notification.classList.contains('show')) {
-            alert("Авиарежим включен! Переходим к игре ✈️");
-            window.location.href = '/three/fly'
-        } else {
-            alert("Сначала откройте все остальные приложения!");
-        }
+        // Полёт к игре
+        document.getElementById('flight').addEventListener('click', () => {
+            if(notification.classList.contains('show')) {
+                alert("Авиарежим включен! Переходим к игре ✈️");
+                window.location.href = '/three/fly';
+            } else {
+                alert("Сначала откройте все остальные приложения!");
+            }
+        });
+
+        // Lightbox
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const images = Array.from(document.querySelectorAll('#photos-window .gallery img'));
+        let currentIndex = 0;
+
+        images.forEach((img, idx) => {
+            img.addEventListener('click', () => {
+                currentIndex = idx;
+                lightboxImg.src = img.src;
+                lightbox.style.display = 'flex';
+            });
+        });
+
+        document.getElementById('prev').addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + images.length) % images.length;
+            lightboxImg.src = images[currentIndex].src;
+        });
+        document.getElementById('next').addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % images.length;
+            lightboxImg.src = images[currentIndex].src;
+        });
+        document.getElementById('close-lightbox').addEventListener('click', () => {
+            lightbox.style.display = 'none';
+        });
     });
 </script>
-
 </body>
 </html>
