@@ -190,6 +190,21 @@
         <button class="close-btn">Закрыть</button>
     </div>
 
+    <div class="app-window" id="music-window">
+        <h2>Музыка 🎵</h2>
+
+        <div style="width:90%; margin-top:10px; display:flex; flex-direction:column; gap:10px;">
+            <button class="track-btn" data-src="/music/track1.mp3">Трек 1</button>
+            <button class="track-btn" data-src="/music/track2.mp3">Трек 2</button>
+            <button class="track-btn" data-src="/music/track3.mp3">Трек 3</button>
+            <button class="track-btn" data-src="/music/track4.mp3">Трек 4</button>
+        </div>
+
+        <audio id="music-player" controls style="width:100%; max-width:260px; margin-top:15px;"></audio>
+
+        <button class="close-btn">Закрыть</button>
+    </div>
+
     <!-- Lightbox -->
     <div id="lightbox">
         <img id="lightbox-img" src="">
@@ -237,6 +252,18 @@
                 const closeBtn = appWindow.querySelector('.close-btn');
                 if(closeBtn) closeBtn.addEventListener('click', () => { appWindow.style.display='none'; });
             }
+        });
+
+        const musicWindow = document.getElementById('music-window');
+        const musicPlayer = document.getElementById('music-player');
+        const trackButtons = musicWindow.querySelectorAll('.track-btn');
+
+        trackButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const src = btn.dataset.src;  // путь к треку
+                musicPlayer.src = src;        // меняем источник
+                musicPlayer.play().catch(err => console.log("Автоплей заблокирован", err));
+            });
         });
 
         // Полёт к игре
