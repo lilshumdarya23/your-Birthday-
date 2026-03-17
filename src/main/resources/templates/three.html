@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>Phone Screen 🎮</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+
     <style>
         body {
             margin: 0;
@@ -13,13 +17,14 @@
             height: 100vh;
             font-family: Arial, sans-serif;
         }
+
         .phone {
             width: 360px;
             height: 720px;
             border-radius: 40px;
             background: #a0d8ff;
             border: 5px solid #ccc;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
             position: relative;
             overflow: hidden;
             display: flex;
@@ -29,15 +34,31 @@
             padding-top: 40px;
             box-sizing: border-box;
         }
-        .time-date { color: #111; text-align:center; }
-        #time { font-size:50px; font-weight:300; line-height:1; }
-        #dayDate { font-size:20px; font-weight:400; margin-top:5px; }
+
+        .time-date {
+            color: #111;
+            text-align: center;
+        }
+
+        #time {
+            font-size: 50px;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+        #dayDate {
+            font-size: 20px;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
         .app-grid {
             display: flex;
             justify-content: space-around;
             width: 100%;
             padding-bottom: 40px;
         }
+
         .app-button {
             width: 60px;
             height: 60px;
@@ -51,7 +72,12 @@
             transition: transform 0.2s, background 0.2s;
             user-select: none;
         }
-        .app-button:hover { transform: scale(1.1); background: #eee; }
+
+        .app-button:hover {
+            transform: scale(1.1);
+            background: #eee;
+        }
+
         .notification {
             position: absolute;
             top: -80px;
@@ -61,95 +87,120 @@
             color: #111;
             padding: 15px 30px;
             border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             font-weight: bold;
             text-align: center;
             font-size: 18px;
             transition: top 1s ease;
             z-index: 10;
         }
-        .notification.show { top: 50%; transform: translate(-50%, -50%); }
 
-        /* Окна приложений */
+        .notification.show {
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
         .app-window {
             position: absolute;
-            top:50px;
-            left:50%;
+            top: 50px;
+            left: 50%;
             transform: translateX(-50%);
-            width:280px;
-            height:400px;
-            background:#fff;
-            color:#111;
-            border-radius:20px;
-            padding:20px;
-            box-sizing:border-box;
-            display:none;
-            flex-direction:column;
-            align-items:center;
-            justify-content:flex-start;
-            box-shadow:0 0 30px rgba(0,0,0,0.5);
-            z-index:5;
+            width: 280px;
+            height: 400px;
+            background: #fff;
+            color: #111;
+            border-radius: 20px;
+            padding: 20px;
+            box-sizing: border-box;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            z-index: 5;
         }
-        .app-window h2 { margin-top:0; font-size:24px; text-align:center; }
-        .close-btn {
-            padding:10px 20px;
-            border:none;
-            border-radius:10px;
-            background:#00c853;
-            color:white;
-            cursor:pointer;
-            font-size:16px;
-            transition:0.2s;
-            margin-top:10px;
-        }
-        .close-btn:hover { background:#00e676; }
 
-        /* Галерея миниатюр */
-        .gallery {
-            display:flex;
-            flex-wrap: wrap;
-            gap:10px;
-            justify-content:center;
-            margin-top:10px;
+        .app-window h2 {
+            margin-top: 0;
+            font-size: 24px;
+            text-align: center;
         }
+
+        .close-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #00c853;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.2s;
+            margin-top: 10px;
+        }
+
+        .close-btn:hover {
+            background: #00e676;
+        }
+
+        .gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
         .gallery img {
             width: 60px;
             height: 60px;
             object-fit: cover;
-            border-radius:8px;
+            border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s;
         }
-        .gallery img:hover { transform: scale(1.1); }
+
+        .gallery img:hover {
+            transform: scale(1.1);
+        }
 
         /* Lightbox */
         #lightbox {
-            display:none;
-            position:absolute;
-            top:0; left:0;
-            width:100%; height:100%;
-            background: rgba(0,0,0,0.85);
-            justify-content:center;
-            align-items:center;
-            z-index:20;
-            flex-direction:column;
-            pointer-events:auto;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            flex-direction: column;
+            pointer-events: auto;
         }
+
         #lightbox img {
-            max-width:90%;
-            max-height:90%;
-            border-radius:10px;
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
             margin-bottom: 10px;
         }
+
         #lightbox button {
-            margin:5px;
-            padding:10px 20px;
-            border:none;
-            border-radius:10px;
-            background:#00c853;
-            color:white;
-            cursor:pointer;
-            font-size:16px;
+            margin: 5px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            background: #00c853;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        #map {
+            width: 100%;
+            height: 300px;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -170,8 +221,7 @@
     </div>
 
     <div class="notification" id="notification">Включите авиарежим!</div>
-
-    <!-- Окно Фото -->
+//TODO: Фото от Димы
     <div class="app-window" id="photos-window">
         <h2>Фотографии 📸</h2>
         <div class="gallery">
@@ -192,20 +242,22 @@
 
     <div class="app-window" id="music-window">
         <h2>Музыка 🎵</h2>
-
         <div style="width:90%; margin-top:10px; display:flex; flex-direction:column; gap:10px;">
             <button class="track-btn" data-src="/music/track1.mp3">Трек 1</button>
             <button class="track-btn" data-src="/music/track2.mp3">Трек 2</button>
             <button class="track-btn" data-src="/music/track3.mp3">Трек 3</button>
             <button class="track-btn" data-src="/music/track4.mp3">Трек 4</button>
         </div>
-
         <audio id="music-player" controls style="width:100%; max-width:260px; margin-top:15px;"></audio>
-
         <button class="close-btn">Закрыть</button>
     </div>
 
-    <!-- Lightbox -->
+    <div class="app-window" id="maps-window">
+        <h2>Карта 🗺️</h2>
+        <div id="map"></div>
+        <button class="close-btn">Закрыть</button>
+    </div>
+
     <div id="lightbox">
         <img id="lightbox-img" src="">
         <div>
@@ -216,24 +268,26 @@
     </div>
 </div>
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <script>
     document.addEventListener("DOMContentLoaded", () => {
-        // Время и дата
+
         function updateTime() {
             const now = new Date();
-            const hours = String(now.getHours()).padStart(2,'0');
-            const minutes = String(now.getMinutes()).padStart(2,'0');
-            const days = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
             const dayName = days[now.getDay()];
             const dayNum = now.getDate();
             document.getElementById('time').textContent = `${hours}:${minutes}`;
             document.getElementById('dayDate').textContent = `${dayName} ${dayNum}`;
         }
+
         setInterval(updateTime, 1000);
         updateTime();
 
-        // Окна приложений
-        const apps = ['photos','notes','music','maps'];
+        const apps = ['photos', 'notes', 'music', 'maps'];
         const clickedButtons = new Set();
         const notification = document.getElementById('notification');
 
@@ -241,34 +295,34 @@
             const windowId = `${id}-window`;
             const appBtn = document.getElementById(id);
             const appWindow = document.getElementById(windowId);
-            if(appWindow) {
+            if (appWindow) {
                 appBtn.addEventListener('click', () => {
                     appWindow.style.display = 'flex';
                     clickedButtons.add(id);
-                    if(clickedButtons.size === apps.length){
+                    if (clickedButtons.size === apps.length) {
                         notification.classList.add('show');
                     }
                 });
                 const closeBtn = appWindow.querySelector('.close-btn');
-                if(closeBtn) closeBtn.addEventListener('click', () => { appWindow.style.display='none'; });
+                if (closeBtn) closeBtn.addEventListener('click', () => {
+                    appWindow.style.display = 'none';
+                });
             }
         });
 
         const musicWindow = document.getElementById('music-window');
         const musicPlayer = document.getElementById('music-player');
         const trackButtons = musicWindow.querySelectorAll('.track-btn');
-
         trackButtons.forEach(btn => {
             btn.addEventListener('click', () => {
-                const src = btn.dataset.src;  // путь к треку
-                musicPlayer.src = src;        // меняем источник
+                const src = btn.dataset.src;
+                musicPlayer.src = src;
                 musicPlayer.play().catch(err => console.log("Автоплей заблокирован", err));
             });
         });
 
-        // Полёт к игре
         document.getElementById('flight').addEventListener('click', () => {
-            if(notification.classList.contains('show')) {
+            if (notification.classList.contains('show')) {
                 alert("Авиарежим включен! Переходим к игре ✈️");
                 window.location.href = '/three/fly';
             } else {
@@ -276,7 +330,6 @@
             }
         });
 
-        // Lightbox
         const lightbox = document.getElementById('lightbox');
         const lightboxImg = document.getElementById('lightbox-img');
         const images = Array.from(document.querySelectorAll('#photos-window .gallery img'));
@@ -289,7 +342,6 @@
                 lightbox.style.display = 'flex';
             });
         });
-
         document.getElementById('prev').addEventListener('click', () => {
             currentIndex = (currentIndex - 1 + images.length) % images.length;
             lightboxImg.src = images[currentIndex].src;
@@ -301,6 +353,35 @@
         document.getElementById('close-lightbox').addEventListener('click', () => {
             lightbox.style.display = 'none';
         });
+
+        const mapWindow = document.getElementById("maps-window");
+        const mapDiv = document.getElementById("map");
+        document.getElementById("maps").addEventListener("click", () => {
+            mapWindow.style.display = 'flex';
+            if (!mapDiv._leaflet_id) {
+                const map = L.map('map').setView([55.7963, 49.1088], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                const restaurants = [
+                    {
+                        name: "На крыше",
+                        coords: [55.787472, 49.120649],
+                        url: "https://restoran-na-kryshe.ru/?ved=2ahUKEwjfveOc4KaTAxUZg_0HHX0JAX4QgU96BAgbEAQ"
+                    },
+                    {name: "Умай", coords: [55.799150, 49.110508], url: "https://umayrest.ru/"},
+                    {name: "Малабар", coords: [55.800241, 49.128323], url: "https://malabar-kazan.ru/"},
+                    {name: "Дадиани", coords: [55.792622, 49.114167], url: "https://dadiani.rest/"},
+                    {name: "Ромейн", coords: [55.795065, 49.112571], url: "https://romein.ru/"},
+                ];
+                restaurants.forEach(r => {
+                    const marker = L.marker(r.coords).addTo(map);
+                    marker.bindPopup(`<b>${r.name}</b><br><a href="${r.url}" target="_blank">Перейти на сайт</a>`);
+                });
+            }
+        });
+
     });
 </script>
 </body>

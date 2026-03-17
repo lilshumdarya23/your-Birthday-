@@ -9,6 +9,7 @@ public class FinalController {
     public String birthdayPage() {
         return "birthday";
     }
+
     @GetMapping("/gift")
     public String giftPage() {
         return "gift";

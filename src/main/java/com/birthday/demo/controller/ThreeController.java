@@ -12,6 +12,7 @@ public class ThreeController {
     public String three() {
         return "three";
     }
+
     @GetMapping("/fly")
     public String fly() {
         return "fly";

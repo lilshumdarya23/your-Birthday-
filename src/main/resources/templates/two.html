@@ -11,35 +11,61 @@
             text-align: center;
             padding-top: 50px;
         }
-        h1 { margin-bottom: 20px; }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
         #wordContainer {
             font-size: 32px;
             letter-spacing: 10px;
             margin-bottom: 20px;
         }
+
         #wrongLetters {
             margin-top: 10px;
             font-size: 20px;
             color: #f44336;
         }
+
         #message {
             margin-top: 20px;
             font-size: 18px;
             color: #f44336;
         }
+
         #hangman {
             position: relative;
             width: 200px;
             height: 250px;
             margin: 0 auto 30px;
         }
+
         #pole, #beam, #rope {
             position: absolute;
             background: white;
         }
-        #pole { width: 5px; height: 250px; left: 50px; top: 0; }
-        #beam { width: 100px; height: 5px; left: 50px; top: 0; }
-        #rope { width: 5px; height: 30px; left: 145px; top: 5px; }
+
+        #pole {
+            width: 5px;
+            height: 250px;
+            left: 50px;
+            top: 0;
+        }
+
+        #beam {
+            width: 100px;
+            height: 5px;
+            left: 50px;
+            top: 0;
+        }
+
+        #rope {
+            width: 5px;
+            height: 30px;
+            left: 145px;
+            top: 5px;
+        }
 
         .hang-part {
             position: absolute;
@@ -47,22 +73,82 @@
             opacity: 0;
             transition: opacity 0.5s ease;
         }
-        .part-visible { opacity: 1; }
 
-        #head { width: 30px; height: 30px; border-radius: 50%; border: 3px solid white; left: 130px; top: 35px; background: transparent; }
-        #body { width: 5px; height: 60px; left: 145px; top: 65px; }
-        #leftArm { width: 40px; height: 5px; left: 105px; top: 75px; transform: rotate(45deg); transform-origin: right center; }
-        #rightArm { width: 40px; height: 5px; left: 150px; top: 75px; transform: rotate(-45deg); transform-origin: left center; }
-        #leftLeg { width: 40px; height: 5px; left: 105px; top: 120px; transform: rotate(-45deg); transform-origin: right center; }
-        #rightLeg { width: 40px; height: 5px; left: 150px; top: 120px; transform: rotate(45deg); transform-origin: left center; }
+        .part-visible {
+            opacity: 1;
+        }
+
+        #head {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            left: 130px;
+            top: 35px;
+            background: transparent;
+        }
+
+        #body {
+            width: 5px;
+            height: 60px;
+            left: 145px;
+            top: 65px;
+        }
+
+        #leftArm {
+            width: 40px;
+            height: 5px;
+            left: 105px;
+            top: 75px;
+            transform: rotate(45deg);
+            transform-origin: right center;
+        }
+
+        #rightArm {
+            width: 40px;
+            height: 5px;
+            left: 150px;
+            top: 75px;
+            transform: rotate(-45deg);
+            transform-origin: left center;
+        }
+
+        #leftLeg {
+            width: 40px;
+            height: 5px;
+            left: 105px;
+            top: 120px;
+            transform: rotate(-45deg);
+            transform-origin: right center;
+        }
+
+        #rightLeg {
+            width: 40px;
+            height: 5px;
+            left: 150px;
+            top: 120px;
+            transform: rotate(45deg);
+            transform-origin: left center;
+        }
 
         @keyframes swing {
-            0% { transform: rotate(0deg); }
-            25% { transform: rotate(15deg); }
-            50% { transform: rotate(-15deg); }
-            75% { transform: rotate(10deg); }
-            100% { transform: rotate(0deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            25% {
+                transform: rotate(15deg);
+            }
+            50% {
+                transform: rotate(-15deg);
+            }
+            75% {
+                transform: rotate(10deg);
+            }
+            100% {
+                transform: rotate(0deg);
+            }
         }
+
         .swing {
             animation: swing 0.8s ease-in-out 3;
             transform-origin: top center;
@@ -78,7 +164,10 @@
             color: white;
             cursor: pointer;
         }
-        #resetBtn:hover { background: #00e676; }
+
+        #resetBtn:hover {
+            background: #00e676;
+        }
 
         #finalScreen {
             display: none;
@@ -87,6 +176,7 @@
             color: #ff4081;
             animation: fadeIn 1s ease forwards;
         }
+
         #finalScreen button {
             margin-top: 20px;
             padding: 10px 25px;
@@ -97,11 +187,20 @@
             cursor: pointer;
             font-size: 18px;
         }
-        #finalScreen button:hover { background: #00e676; }
+
+        #finalScreen button:hover {
+            background: #00e676;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -132,14 +231,14 @@
 </div>
 
 <script>
-    const words = ["STRONGEST","SMARTEST","SPECIALEST"];
+    const words = ["STRONGEST", "SMARTEST", "SPECIALEST"];
     let currentWordIndex = 0;
     let word = "";
     let guessedLetters = [];
     let wrongLetters = [];
     let wrongGuesses = 0;
     const maxWrong = 6;
-    const parts = ["head","body","leftArm","rightArm","leftLeg","rightLeg"];
+    const parts = ["head", "body", "leftArm", "rightArm", "leftLeg", "rightLeg"];
 
     function startGame() {
         word = words[currentWordIndex];
@@ -158,9 +257,9 @@
         });
     }
 
-    function updateWordDisplay(){
+    function updateWordDisplay() {
         let display = "";
-        for(let char of word){
+        for (let char of word) {
             display += guessedLetters.includes(char) ? char + " " : "_ ";
         }
         document.getElementById("wordContainer").textContent = display;
@@ -170,28 +269,28 @@
         document.getElementById("wrongLetters").textContent = "Неправильные: " + wrongLetters.join(" ");
     }
 
-    function checkWin(){
-        if(word.split("").every(c => guessedLetters.includes(c))){
+    function checkWin() {
+        if (word.split("").every(c => guessedLetters.includes(c))) {
             document.getElementById("message").textContent = "Слово угадано! 🎉";
             nextWord();
         }
     }
 
-    function loseGame(){
+    function loseGame() {
         document.getElementById("message").textContent = "Проигрыш! Попробуй ещё раз";
         parts.forEach(p => document.getElementById(p).classList.add("swing"));
         document.getElementById("resetBtn").style.display = "inline-block";
     }
 
-    function nextWord(){
+    function nextWord() {
         currentWordIndex++;
-        if(currentWordIndex < words.length){
-            setTimeout(()=>{
+        if (currentWordIndex < words.length) {
+            setTimeout(() => {
                 alert("Переходим к следующему слову!");
                 startGame();
             }, 500);
         } else {
-            setTimeout(()=>{
+            setTimeout(() => {
                 document.getElementById("hangman").style.display = "none";
                 document.getElementById("wordContainer").style.display = "none";
                 document.getElementById("wrongLetters").style.display = "none";
@@ -203,10 +302,10 @@
         }
     }
 
-    function guessLetter(letter){
+    function guessLetter(letter) {
         letter = letter.toUpperCase();
-        if(guessedLetters.includes(letter) || wrongLetters.includes(letter)) return;
-        if(word.includes(letter)){
+        if (guessedLetters.includes(letter) || wrongLetters.includes(letter)) return;
+        if (word.includes(letter)) {
             guessedLetters.push(letter);
             updateWordDisplay();
             checkWin();
@@ -215,23 +314,24 @@
             updateWrongLetters();
             document.getElementById(parts[wrongGuesses]).style.opacity = 1;
             wrongGuesses++;
-            if(wrongGuesses === maxWrong){
+            if (wrongGuesses === maxWrong) {
                 loseGame();
             }
         }
     }
 
-    function goToGifts(){
+    function goToGifts() {
         window.location.href = "/";
     }
 
     document.addEventListener("keydown", e => {
-        if(e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
+        if (e.key.length === 1 && e.key.match(/[a-zA-Z]/)) {
             guessLetter(e.key);
         }
     });
+
     function finishGame() {
-        fetch('/two/unlock', { method: 'POST' })
+        fetch('/two/unlock', {method: 'POST'})
             .then(res => res.text())
             .then(msg => {
             })
