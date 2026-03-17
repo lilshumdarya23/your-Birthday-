@@ -1,5 +1,6 @@
 package com.birthday.demo.controller;
 
+import com.birthday.demo.entity.Gift;
 import com.birthday.demo.service.GiftUnlockService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/two")
@@ -26,6 +29,7 @@ public class TwoController {
     public String unlockSecondGift() {
         try {
             boolean unlocked = giftUnlockService.unlockTwo(2L);
+            List<Gift> gifts = giftUnlockService.getLockedGifts();
             return unlocked ? "Подарок #2 разблокирован!" : "Ошибка разблокировки";
         } catch (Exception e) {
             log.error("Ошибка при разблокировке подарка #2", e);
