@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ваш подарок</title>
+
+    <style>
+
+        body{
+            margin:0;
+            background:black;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            flex-direction:column;
+            font-family:Arial;
+        }
+
+        img{
+            max-width:80%;
+            border-radius:10px;
+            box-shadow:0 0 30px rgba(255,255,255,0.3);
+        }
+
+        /* твоя кнопка */
+
+        .start-button{
+            margin-top:40px;
+            padding:15px 40px;
+            font-size:20px;
+            border:none;
+            border-radius:8px;
+            background:#00c853;
+            color:white;
+            cursor:pointer;
+            transition:0.2s;
+        }
+
+        .start-button:hover{
+            background:#00e676;
+            transform:scale(1.05);
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<img src="/certificate.jpg" alt="Сертификат">
+
+<button class="start-button" onclick="goBirthday()">
+    🎉 Выход
+</button>
+
+<script>
+
+    function goBirthday(){
+        localStorage.setItem("playMusic", "true");
+        window.location.href="/birthday";
+    }
+
+</script>
+
+</body>
+</html>

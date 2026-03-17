@@ -131,10 +131,16 @@
                     obstacles.splice(oIdx, 1);
                     bullets.splice(bIdx, 1);
                     score += 1;
-                    if (score >= 50) {
+                    if (score >= 5) {
                         gameOver = true;
-                        alert("🎉 Вы выиграли! Поздравляем! 🎉");
-                        if (confirm("Хотите сыграть ещё раз?")) initGame();
+
+                        const getGift = confirm("🎉 Вы выиграли!\n\nНажмите OK чтобы получить подарок 🎁");
+
+                        if (getGift) {
+                            window.location.href = "/gift";
+                        } else {
+                            initGame();
+                        }
                     }
                 }
             });

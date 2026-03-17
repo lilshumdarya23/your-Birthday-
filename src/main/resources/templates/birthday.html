@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>С Днём Рождения!</title>
+
+    <style>
+        body{
+            margin:0;
+            background:black;
+            overflow:hidden;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+            font-family:Arial;
+            color:white;
+            text-align:center;
+            flex-direction:column;
+        }
+
+        h1{
+            font-size:60px;
+            margin-bottom:50px;
+            z-index:2;
+        }
+
+        canvas{
+            position:fixed;
+            top:0;
+            left:0;
+            pointer-events:none;
+            z-index:1;
+        }
+
+        .start-button{
+            padding:15px 40px;
+            font-size:20px;
+            border:none;
+            border-radius:8px;
+            background:#00c853;
+            color:white;
+            cursor:pointer;
+            transition:0.2s;
+            z-index:2;
+        }
+
+        .start-button:hover{
+            background:#00e676;
+            transform:scale(1.05);
+        }
+    </style>
+</head>
+
+<body>
+
+<h1 id="birthday-text">🎉 С ДНЁМ РОЖДЕНИЯ! 🎉</h1>
+
+<audio id="birthday-music" loop>
+    <source src="/birthday.mp3" type="audio/mpeg">
+</audio>
+
+<canvas id="confetti"></canvas>
+
+<script>
+    // ——— Автозапуск музыки после перехода со страницы сертификата ———
+    window.addEventListener("DOMContentLoaded", () => {
+        if(localStorage.getItem("playMusic")==="true"){
+            const music = document.getElementById("birthday-music");
+            music.play().catch(err => console.log("Автоплей заблокирован", err));
+            localStorage.removeItem("playMusic");
+        }
+    });
+
+    // ——— Конфетти ———
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const colors = ["#ff0a54","#ff477e","#ff7096","#ff85a1","#fbb1b1","#f9bec7","#f7cad0","#fae0e4","#9b5de5","#f15bb5","#fee440","#00bbf9","#00f5d4"];
+
+    const pieces = [];
+    const pieceCount = 150;
+    for(let i=0;i<pieceCount;i++){
+        pieces.push({
+            x:Math.random()*canvas.width,
+            y:Math.random()*canvas.height,
+            r:Math.random()*6+4,
+            d:Math.random()*100,
+            color: colors[Math.floor(Math.random()*colors.length)],
+            tilt: Math.random() * 10 - 5
+        });
+    }
+
+    function draw(){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        pieces.forEach(p=>{
+            ctx.fillStyle = p.color;
+            ctx.beginPath();
+            ctx.moveTo(p.x + p.tilt, p.y);
+            ctx.lineTo(p.x + p.tilt + p.r/2, p.y + p.r);
+            ctx.lineTo(p.x + p.tilt - p.r/2, p.y + p.r);
+            ctx.closePath();
+            ctx.fill();
+        });
+        update();
+    }
+
+    function update(){
+        pieces.forEach(p=>{
+            p.y += 2;
+            p.x += Math.sin(p.y * 0.05);
+            if(p.y > canvas.height){
+                p.y = 0;
+                p.x = Math.random()*canvas.width;
+                p.color = colors[Math.floor(Math.random()*colors.length)];
+            }
+        });
+    }
+
+    setInterval(draw,20);
+
+    // ——— Кнопка для ручного старта праздника ———
+    document.getElementById("start-button").addEventListener("click", () => {
+        document.getElementById("start-button").style.display = "none";
+
+        const music = document.getElementById("birthday-music");
+        music.play().catch(err => console.log("Автоплей заблокирован", err));
+
+        // Анимация текста: пульс
+        const text = document.getElementById("birthday-text");
+        let scale = 1;
+        let growing = true;
+        setInterval(() => {
+            if(growing){
+                scale += 0.01;
+                if(scale >= 1.2) growing = false;
+            } else {
+                scale -= 0.01;
+                if(scale <= 1) growing = true;
+            }
+            text.style.transform = `scale(${scale})`;
+        }, 20);
+    });
+</script>
+
+</body>
+</html>
