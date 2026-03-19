@@ -145,10 +145,19 @@
         .gallery {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             margin-top: 10px;
+            overflow-y: auto;   /* прокрутка по вертикали */
+            flex: 1;            /* занимает всё место между заголовком и кнопкой */
+            width: 100%;
+            padding: 4px 2px;
+            box-sizing: border-box;
         }
+
+        /* тонкий скроллбар */
+        .gallery::-webkit-scrollbar { width: 4px; }
+        .gallery::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
         .gallery img {
             width: 60px;
@@ -157,6 +166,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s;
+            flex-shrink: 0;
         }
 
         .gallery img:hover {
@@ -221,12 +231,36 @@
     </div>
 
     <div class="notification" id="notification">Включите авиарежим!</div>
-//TODO: Фото от Димы
     <div class="app-window" id="photos-window">
         <h2>Фотографии 📸</h2>
         <div class="gallery">
             <img src="/photos/photo1.jpg" alt="Фото 1">
             <img src="/photos/photo2.jpg" alt="Фото 2">
+            <img src="/photos/photo3.jpg" alt="Фото 3">
+            <img src="/photos/photo4.jpg" alt="Фото 4">
+            <img src="/photos/photo5.jpg" alt="Фото 5">
+            <img src="/photos/photo6.jpg" alt="Фото 6">
+            <img src="/photos/photo7.jpg" alt="Фото 7">
+            <img src="/photos/photo8.jpg" alt="Фото 8">
+            <img src="/photos/photo9.jpg" alt="Фото 9">
+            <img src="/photos/photo10.jpg" alt="Фото 10">
+            <img src="/photos/photo11.jpg" alt="Фото 11">
+            <img src="/photos/photo12.jpg" alt="Фото 12">
+            <img src="/photos/photo13.jpg" alt="Фото 13">
+            <img src="/photos/photo14.jpg" alt="Фото 14">
+            <img src="/photos/photo15.jpg" alt="Фото 15">
+            <img src="/photos/photo16.jpg" alt="Фото 16">
+            <img src="/photos/photo17.jpg" alt="Фото 17">
+            <img src="/photos/photo18.jpg" alt="Фото 18">
+            <img src="/photos/photo19.jpg" alt="Фото 19">
+            <img src="/photos/photo20.jpg" alt="Фото 20">
+            <img src="/photos/photo21.jpg" alt="Фото 21">
+            <img src="/photos/photo22.jpg" alt="Фото 22">
+            <img src="/photos/photo23.jpg" alt="Фото 23">
+            <img src="/photos/photo24.jpg" alt="Фото 24">
+            <img src="/photos/photo25.jpg" alt="Фото 25">
+            <img src="/photos/photo26.jpg" alt="Фото 26">
+            <img src="/photos/photo27.jpg" alt="Фото 27">
         </div>
         <button class="close-btn">Закрыть</button>
     </div>
@@ -299,13 +333,17 @@
                 appBtn.addEventListener('click', () => {
                     appWindow.style.display = 'flex';
                     clickedButtons.add(id);
-                    if (clickedButtons.size === apps.length) {
-                        notification.classList.add('show');
-                    }
                 });
                 const closeBtn = appWindow.querySelector('.close-btn');
                 if (closeBtn) closeBtn.addEventListener('click', () => {
                     appWindow.style.display = 'none';
+                    if (clickedButtons.size === apps.length) {
+                        const anyOpen = apps.some(a => {
+                            const w = document.getElementById(`${a}-window`);
+                            return w && w.style.display === 'flex';
+                        });
+                        if (!anyOpen) notification.classList.add('show');
+                    }
                 });
             }
         });
